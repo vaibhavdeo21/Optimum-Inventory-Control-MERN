@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
-import { AlertTriangle, CheckCircle, TrendingUp, Trash2 } from 'lucide-react'; // Added Trash2
-
+import { AlertTriangle, CheckCircle, TrendingUp, Trash2 } from 'lucide-react'; 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const Dashboard = () => {
@@ -80,10 +79,8 @@ const Dashboard = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
-        {/* Left Column: Charts & Table */}
         <div className="lg:col-span-2 space-y-8">
           
-          {/* Chart Card */}
           <div className="bg-white p-6 rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-lg font-bold text-slate-700 flex items-center gap-2">
@@ -96,7 +93,6 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* Table Card */}
           <div className="bg-white rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
             <div className="p-6 border-b border-slate-50">
               <h2 className="text-lg font-bold text-slate-700">Live Inventory Status</h2>
@@ -132,11 +128,9 @@ const Dashboard = () => {
                         )}
                       </td>
                       <td className="p-4 flex items-center gap-2">
-                        {/* Dispatch Button */}
                         <button onClick={() => consumeItem(spare._id)} className="text-xs bg-slate-800 hover:bg-slate-900 text-white px-3 py-1.5 rounded-lg transition-colors">
                           Dispatch
                         </button>
-                        {/* Delete Button (NEW) */}
                         <button 
                           onClick={() => deleteItem(spare._id)} 
                           className="p-1.5 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors"
@@ -152,7 +146,6 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Right Column: Add Form */}
         <div className="bg-white p-6 rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100 h-fit sticky top-8">
           <div className="mb-6 pb-4 border-b border-slate-100">
             <h2 className="text-xl font-bold text-slate-800">Add New Spare</h2>

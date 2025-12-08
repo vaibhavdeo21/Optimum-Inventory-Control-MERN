@@ -1,39 +1,80 @@
-import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import React, { useContext } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
-// Import all your components
+import { AuthProvider, AuthContext } from './context/AuthContext';
+import Login from './components/Login';
+
 import Sidebar from './components/Sidebar';
 import Dashboard from './components/Dashboard';
 import Analytics from './components/Analytics';
 import Settings from './components/Settings';
 import AddStock from './components/AddStock';
 
+const ProtectedRoute = ({ children }) => {
+  const { user } = useContext(AuthContext);
+  
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return (
+    <div className="flex min-h-screen bg-gradient-to-br from-slate-50 to-indigo-50/30">
+      <Sidebar />
+      
+      <div className="flex-1 ml-64 p-8">
+        {children}
+      </div>
+    </div>
+  );
+};
+
 function App() {
   return (
-    <BrowserRouter>
-      
-      <div className="flex min-h-screen bg-gradient-to-br from-slate-50 to-indigo-50/30">
-        
-        
-        <Sidebar />
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          
+          <Route path="/login" element={<Login />} />
 
-        <div className="flex-1 ml-64 p-8">
-          <Routes>
-            {/* 1. Dashboard (Home) */}
-            <Route path="/" element={<Dashboard />} />
-            
-            {/* 2. Analytics & ABC Analysis */}
-            <Route path="/analytics" element={<Analytics />} />
-            
-            {/* 3. Incoming Stock (Restocking) */}
-            <Route path="/add-stock" element={<AddStock />} />
-            
-            {/* 4. Settings & Export */}
-            <Route path="/settings" element={<Settings />} />
-          </Routes>
-        </div>
-      </div>
-    </BrowserRouter>
+          <Route 
+            path="/" 
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/analytics" 
+            element={
+              <ProtectedRoute>
+                <Analytics />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/add-stock" 
+            element={
+              <ProtectedRoute>
+                <AddStock />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/settings" 
+            element={
+              <ProtectedRoute>
+                <Settings />
+              </ProtectedRoute>
+            } 
+          />
+
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 

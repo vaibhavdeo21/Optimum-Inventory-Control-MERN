@@ -27,7 +27,6 @@ const AddStock = () => {
         quantity: parseInt(quantity)
       });
       
-      // Update local logs for visual feedback
       const item = spares.find(s => s._id === selectedSpare);
       const newLog = {
         id: Date.now(),
@@ -40,7 +39,7 @@ const AddStock = () => {
       setRecentLogs([newLog, ...recentLogs]);
       setQuantity('');
       setSelectedSpare('');
-      fetchSpares(); // Refresh data
+      fetchSpares(); 
       alert(`Successfully added ${quantity} units to inventory.`);
     } catch (err) {
       console.error(err);
@@ -48,7 +47,6 @@ const AddStock = () => {
     }
   };
 
-  // Filter items based on search
   const filteredSpares = spares.filter(s => 
     s.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
     s.sku.toLowerCase().includes(searchTerm.toLowerCase())
@@ -63,7 +61,6 @@ const AddStock = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         
-        {/* LEFT: Entry Form */}
         <div className="bg-white p-8 rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100 h-fit">
           <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-50">
             <div className="p-3 bg-indigo-100 rounded-xl text-indigo-600">
@@ -77,7 +74,6 @@ const AddStock = () => {
 
           <form onSubmit={handleRestock} className="space-y-6">
             
-            {/* Searchable Selection */}
             <div className="space-y-2">
               <label className="text-sm font-bold text-slate-700">1. Select Item</label>
               <div className="relative">
@@ -94,7 +90,7 @@ const AddStock = () => {
                 value={selectedSpare} 
                 onChange={(e) => setSelectedSpare(e.target.value)}
                 className="w-full p-3 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-700"
-                size={5} // Show multiple items
+                size={5} 
                 required
               >
                 {filteredSpares.map(spare => (
@@ -105,7 +101,6 @@ const AddStock = () => {
               </select>
             </div>
 
-            {/* Quantity Input */}
             <div className="space-y-2">
               <label className="text-sm font-bold text-slate-700">2. Quantity Received</label>
               <div className="flex items-center gap-4">
@@ -126,7 +121,6 @@ const AddStock = () => {
           </form>
         </div>
 
-        {/* RIGHT: Recent Activity Log */}
         <div className="bg-slate-900 p-8 rounded-2xl shadow-xl text-white h-fit">
           <div className="flex items-center gap-3 mb-6">
              <History className="text-emerald-400" />

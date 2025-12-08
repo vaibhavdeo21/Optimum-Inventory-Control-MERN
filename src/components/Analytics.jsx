@@ -61,7 +61,6 @@ const Analytics = () => {
         <p className="text-slate-500 mt-1">Cost analysis in INR (₹)</p>
       </header>
 
-      {/* KPI Gradients */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="relative overflow-hidden bg-gradient-to-br from-indigo-500 to-violet-600 p-6 rounded-2xl shadow-lg shadow-indigo-500/20 text-white">
           <div className="absolute top-0 right-0 p-4 opacity-10"><IndianRupee size={100} /></div>

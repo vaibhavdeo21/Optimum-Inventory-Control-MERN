@@ -3,7 +3,6 @@ import axios from 'axios';
 import { Save, Download, Trash2, MapPin, Building2, Calculator, AlertOctagon } from 'lucide-react';
 
 const Settings = () => {
-  // State for settings (persisted in localStorage for now)
   const [config, setConfig] = useState({
     warehouseName: 'Lovely Professional University',
     location: 'Punjab, India',
@@ -32,26 +31,22 @@ const Settings = () => {
     setTimeout(() => setMessage(null), 3000);
   };
 
-  // --- FEATURE: EXPORT TO CSV ---
   const downloadCSV = async () => {
     try {
       const res = await axios.get('http://localhost:5000/api/spares');
       const data = res.data;
       
-      // Create CSV Header
       let csvContent = "data:text/csv;charset=utf-8,";
       csvContent += "Name,SKU,Current Stock,Unit Price (INR),Annual Demand,EOQ,Status\n";
 
-      // Add Data Rows
       data.forEach(row => {
         csvContent += `${row.name},${row.sku},${row.currentStock},${row.unitPrice},${row.annualDemand},${row.eoq},${row.status}\n`;
       });
 
-      // Trigger Download
       const encodedUri = encodeURI(csvContent);
       const link = document.createElement("a");
       link.setAttribute("href", encodedUri);
-      link.setAttribute("download", "inventory_report_guwahati.csv");
+      link.setAttribute("download", "inventory_report.csv");
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -78,7 +73,6 @@ const Settings = () => {
 
       <div className="grid grid-cols-1 gap-8">
         
-        {/* 1. General Configuration */}
         <section className="bg-white p-6 rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100">
           <div className="flex items-center gap-3 mb-6 border-b border-slate-50 pb-4">
             <div className="p-2 bg-indigo-100 rounded-lg text-indigo-600">
@@ -111,7 +105,6 @@ const Settings = () => {
           </form>
         </section>
 
-        {/* 2. EOQ & Math Parameters */}
         <section className="bg-white p-6 rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100">
           <div className="flex items-center gap-3 mb-6 border-b border-slate-50 pb-4">
             <div className="p-2 bg-amber-100 rounded-lg text-amber-600">
@@ -132,9 +125,7 @@ const Settings = () => {
           </div>
         </section>
 
-        {/* 3. Data Actions */}
         <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
-           {/* Export Card */}
            <div className="bg-gradient-to-br from-emerald-500 to-teal-600 p-6 rounded-2xl text-white shadow-lg">
               <div className="flex items-start justify-between">
                 <div>
@@ -148,7 +139,6 @@ const Settings = () => {
               </button>
            </div>
 
-           {/* Danger Zone */}
            <div className="bg-white p-6 rounded-2xl border border-red-100 shadow-sm">
               <div className="flex items-center gap-2 text-red-600 mb-2">
                 <AlertOctagon size={20}/>

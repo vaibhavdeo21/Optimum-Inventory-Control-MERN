@@ -54,6 +54,10 @@ This application uses the **MERN Stack** (MongoDB, Express, React, Node.js) to a
 |:---:|:---:|
 | ![Incoming Stock](./screenshots/stock.png) | ![Settings](./screenshots/settings.png) |
 
+| **Secure Login / Registration** |
+|:---:|
+| ![Login Page](./screenshots/login.png) |
+
 ---
 
 ## ⚙️ Installation & Run Guide
@@ -61,29 +65,29 @@ This application uses the **MERN Stack** (MongoDB, Express, React, Node.js) to a
 Follow these steps to run the project locally.
 
 ### 1. Clone the Repository
-```bash
+```bash```
 git clone [https://github.com/vaibhavdeo21/Optimum-Inventory-Control-MERN.git](https://github.com/vaibhavdeo21/Optimum-Inventory-Control-MERN.git)
 cd Optimum-Inventory-Control-MERN
 
-###2. Backend Setup
+### 2. Backend Setup
 Navigate to the backend folder, install dependencies, and start the server.
-```bash
+
+```bash```
 cd backend
 npm install
 node server.js
 Output: Server running on port 5000 & MongoDB Connected
 
-###3. Frontend Setup
+### 3. Frontend Setup
 Open a new terminal, navigate to the project root, and start the React app.
-```bash
+```Bash```
 # (Make sure you are in the root folder, not inside backend)
 npm install
 npm run dev
 Open your browser at http://localhost:5173
 
----
 
-🧮 Algorithms Implemented
+### 4. 🧮Algorithms Implemented
 1. Economic Order Quantity (EOQ)
 Used to determine the optimal order quantity that minimizes total inventory costs.
 $$EOQ = \sqrt{\frac{2 \times D \times S}{H}}$$
@@ -98,7 +102,6 @@ Items are sorted by Annual Usage Value (Unit Price × Annual Demand).
 •	Class A: Top 70% of cumulative value (Requires strict control).
 •	Class B: Next 20% of cumulative value (Requires moderate control).
 •	Class C: Bottom 10% of cumulative value (Requires loose control).
-________________________________________
+
 📝 License
 This project is created for academic purposes.
-

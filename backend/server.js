@@ -1,18 +1,58 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+
 const SparePart = require('./models/SparePart');
+const User = require('./models/User');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// 1. Connect to MongoDB
-mongoose.connect('mongodb://localhost:27017/inventory_optimum')
-  .then((conn) => console.log(`MongoDB Connected: ${conn.connection.host}`))
-  .catch(err => console.log(err));
+const JWT_SECRET = 'your_super_secret_key_123';
+const MONGO_URI = 'mongodb://localhost:27017/inventory_optimum';
 
-// 2. GET: Fetch all items
+mongoose.connect(MONGO_URI)
+  .then((conn) => console.log(`MongoDB Connected: ${conn.connection.host}`))
+  .catch(err => console.error('MongoDB Connection Error:', err));
+
+
+
+app.post('/api/auth/register', async (req, res) => {
+  const { username, password } = req.body;
+  try {
+    const existingUser = await User.findOne({ username });
+    if (existingUser) return res.status(400).json({ error: 'Username already taken' });
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = new User({ username, password: hashedPassword });
+    await user.save();
+    
+    res.status(201).json({ message: 'User registered successfully' });
+  } catch (err) {
+    res.status(500).json({ error: 'Error registering user' });
+  }
+});
+
+app.post('/api/auth/login', async (req, res) => {
+  const { username, password } = req.body;
+  try {
+    const user = await User.findOne({ username });
+    if (!user) return res.status(400).json({ error: 'User not found' });
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return res.status(400).json({ error: 'Invalid credentials' });
+
+    const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '2h' });
+    res.json({ token, username: user.username });
+  } catch (err) {
+    res.status(500).json({ error: 'Login failed' });
+  }
+});
+
+
 app.get('/api/spares', async (req, res) => {
   try {
     const spares = await SparePart.find();
@@ -22,10 +62,9 @@ app.get('/api/spares', async (req, res) => {
   }
 });
 
-// 3. POST: Add a new item (First time registration)
 app.post('/api/spares', async (req, res) => {
-  const spare = new SparePart(req.body);
   try {
+    const spare = new SparePart(req.body);
     const newSpare = await spare.save();
     res.status(201).json(newSpare);
   } catch (err) {
@@ -33,7 +72,6 @@ app.post('/api/spares', async (req, res) => {
   }
 });
 
-// 4. PATCH: Consume stock (Dispatch/Decrease)
 app.patch('/api/spares/:id/consume', async (req, res) => {
   try {
     const spare = await SparePart.findById(req.params.id);
@@ -48,18 +86,16 @@ app.patch('/api/spares/:id/consume', async (req, res) => {
   }
 });
 
-// 5. PATCH: Restock (Incoming Stock/Increase)
 app.patch('/api/spares/:id/restock', async (req, res) => {
   try {
     const spare = await SparePart.findById(req.params.id);
-    spare.currentStock += parseInt(req.body.quantity); 
+    spare.currentStock += parseInt(req.body.quantity);
     await spare.save();
     res.json(spare);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 });
-
 
 app.delete('/api/spares/:id', async (req, res) => {
   try {
