@@ -2,6 +2,8 @@ import React, { useContext } from 'react';
 import { NavLink } from 'react-router-dom';
 import { LayoutDashboard, PackagePlus, BarChart3, Settings, Package, LogOut } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext'; 
+import { FileText } from 'lucide-react';
+
 const Sidebar = () => {
   const { logout, user } = useContext(AuthContext); 
 
@@ -38,6 +40,11 @@ const Sidebar = () => {
         <NavLink to="/analytics" className={linkClasses}>
           <BarChart3 className="w-5 h-5" />
           Analytics (ABC)
+        </NavLink>
+
+        <NavLink to="/reports" className={linkClasses}>
+          <FileText className="w-5 h-5" />
+          Reports & Logs
         </NavLink>
         
         <NavLink to="/add-stock" className={linkClasses}>

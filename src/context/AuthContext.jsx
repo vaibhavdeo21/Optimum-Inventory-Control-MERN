@@ -22,6 +22,10 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('username');
+    
+    // FIX: Clear the session logs on logout
+    sessionStorage.removeItem('sessionLogs');
+    
     setUser(null);
   };
 

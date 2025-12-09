@@ -1,21 +1,35 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import { PackagePlus, Search, Truck, History } from 'lucide-react';
 
 const AddStock = () => {
+  const navigate = useNavigate();
   const [spares, setSpares] = useState([]);
   const [selectedSpare, setSelectedSpare] = useState('');
   const [quantity, setQuantity] = useState('');
-  const [recentLogs, setRecentLogs] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  
+  // Load logs from Session Storage
+  const [recentLogs, setRecentLogs] = useState(() => {
+    const savedLogs = sessionStorage.getItem('sessionLogs');
+    return savedLogs ? JSON.parse(savedLogs) : [];
+  });
 
   useEffect(() => {
     fetchSpares();
   }, []);
 
+  // Save logs to Session Storage whenever they change
+  useEffect(() => {
+    sessionStorage.setItem('sessionLogs', JSON.stringify(recentLogs));
+  }, [recentLogs]);
+
   const fetchSpares = async () => {
-    const res = await axios.get('http://localhost:5000/api/spares');
-    setSpares(res.data);
+    try {
+      const res = await axios.get('http://localhost:5000/api/spares');
+      setSpares(res.data);
+    } catch (err) { console.error(err); }
   };
 
   const handleRestock = async (e) => {
@@ -36,10 +50,10 @@ const AddStock = () => {
         sku: item.sku
       };
       
-      setRecentLogs([newLog, ...recentLogs]);
+      setRecentLogs([newLog, ...recentLogs]); 
       setQuantity('');
-      setSelectedSpare('');
-      fetchSpares(); 
+      setSelectedSpare(''); // Reset selection
+      fetchSpares();
       alert(`Successfully added ${quantity} units to inventory.`);
     } catch (err) {
       console.error(err);
@@ -61,6 +75,7 @@ const AddStock = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         
+        {/* LEFT: Entry Form */}
         <div className="bg-white p-8 rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100 h-fit">
           <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-50">
             <div className="p-3 bg-indigo-100 rounded-xl text-indigo-600">
@@ -73,7 +88,6 @@ const AddStock = () => {
           </div>
 
           <form onSubmit={handleRestock} className="space-y-6">
-            
             <div className="space-y-2">
               <label className="text-sm font-bold text-slate-700">1. Select Item</label>
               <div className="relative">
@@ -93,6 +107,9 @@ const AddStock = () => {
                 size={5} 
                 required
               >
+                {/* FIX: Placeholder Option added here */}
+                <option value="" disabled className="p-2 text-gray-400 italic">-- Select an Item to Restock --</option>
+                
                 {filteredSpares.map(spare => (
                   <option key={spare._id} value={spare._id} className="p-2 hover:bg-indigo-50 cursor-pointer border-b border-slate-50">
                     {spare.name} (Current: {spare.currentStock}) - SKU: {spare.sku}
@@ -117,17 +134,17 @@ const AddStock = () => {
                 </button>
               </div>
             </div>
-
           </form>
         </div>
 
+        {/* RIGHT: Recent Activity Log */}
         <div className="bg-slate-900 p-8 rounded-2xl shadow-xl text-white h-fit">
           <div className="flex items-center gap-3 mb-6">
              <History className="text-emerald-400" />
              <h2 className="text-lg font-bold">Session Activity Log</h2>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-4 max-h-[400px] overflow-y-auto">
             {recentLogs.length === 0 ? (
               <p className="text-slate-500 text-sm italic">No stock received in this session yet.</p>
             ) : (
@@ -148,7 +165,12 @@ const AddStock = () => {
 
           <div className="mt-8 pt-6 border-t border-white/10 text-center">
             <p className="text-xs text-slate-500">Need to create a brand new item?</p>
-            <p className="text-sm text-indigo-400 cursor-pointer hover:text-indigo-300">Go to Dashboard to register new parts.</p>
+            <p 
+              onClick={() => navigate('/')} 
+              className="text-sm text-indigo-400 cursor-pointer hover:text-indigo-300 font-semibold"
+            >
+              Go to Dashboard to register new parts.
+            </p>
           </div>
         </div>
 

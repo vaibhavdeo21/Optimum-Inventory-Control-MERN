@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
-import { AlertTriangle, CheckCircle, TrendingUp, Trash2 } from 'lucide-react'; 
+import { AlertTriangle, CheckCircle, TrendingUp, Trash2 } from 'lucide-react';
+
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const Dashboard = () => {
@@ -32,15 +33,44 @@ const Dashboard = () => {
     setFormData({ name: '', sku: '', annualDemand: '', orderingCost: '', unitPrice: '', holdingCostRate: '', leadTimeDays: '', currentStock: '' });
   };
 
-  const consumeItem = async (id) => {
-    await axios.patch(`http://localhost:5000/api/spares/${id}/consume`, { quantity: 1 });
-    fetchSpares();
+  // FIX: Updated Consume Logic to ask for quantity
+  const consumeItem = async (id, currentStock) => {
+    // 1. Ask user for amount
+    const qtyStr = prompt(`How many units do you want to dispatch? (Max: ${currentStock})`, "1");
+    
+    // 2. Validate input
+    if (qtyStr === null) return; // User cancelled
+    const qty = parseInt(qtyStr);
+
+    if (isNaN(qty) || qty <= 0) {
+      alert("Please enter a valid positive number.");
+      return;
+    }
+
+    if (qty > currentStock) {
+      alert(`Error: Insufficient stock! You only have ${currentStock} units available.`);
+      return;
+    }
+
+    // 3. Send to API
+    try {
+      await axios.patch(`http://localhost:5000/api/spares/${id}/consume`, { quantity: qty });
+      fetchSpares();
+    } catch (err) {
+      console.error(err);
+      alert("Failed to update stock. Check console.");
+    }
   };
 
   const deleteItem = async (id) => {
     if (window.confirm('Are you sure you want to delete this item permanently?')) {
-      await axios.delete(`http://localhost:5000/api/spares/${id}`);
-      fetchSpares();
+      try {
+        await axios.delete(`http://localhost:5000/api/spares/${id}`);
+        fetchSpares();
+      } catch (err) {
+        console.error("Delete Failed:", err);
+        alert("Failed to delete.");
+      }
     }
   };
 
@@ -79,6 +109,7 @@ const Dashboard = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
+        {/* Left Column: Charts & Table */}
         <div className="lg:col-span-2 space-y-8">
           
           <div className="bg-white p-6 rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100">
@@ -128,9 +159,13 @@ const Dashboard = () => {
                         )}
                       </td>
                       <td className="p-4 flex items-center gap-2">
-                        <button onClick={() => consumeItem(spare._id)} className="text-xs bg-slate-800 hover:bg-slate-900 text-white px-3 py-1.5 rounded-lg transition-colors">
+                        {/* Dispatch Button with Quantity Prompt */}
+                        <button 
+                          onClick={() => consumeItem(spare._id, spare.currentStock)} 
+                          className="text-xs bg-slate-800 hover:bg-slate-900 text-white px-3 py-1.5 rounded-lg transition-colors">
                           Dispatch
                         </button>
+                        
                         <button 
                           onClick={() => deleteItem(spare._id)} 
                           className="p-1.5 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors"
@@ -146,6 +181,7 @@ const Dashboard = () => {
           </div>
         </div>
 
+        {/* Right Column: Add Form */}
         <div className="bg-white p-6 rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100 h-fit sticky top-8">
           <div className="mb-6 pb-4 border-b border-slate-100">
             <h2 className="text-xl font-bold text-slate-800">Add New Spare</h2>

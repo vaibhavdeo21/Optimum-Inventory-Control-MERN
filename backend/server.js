@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-
+const Transaction = require('./models/Transaction');
 const SparePart = require('./models/SparePart');
 const User = require('./models/User');
 
@@ -80,6 +80,14 @@ app.patch('/api/spares/:id/consume', async (req, res) => {
     }
     spare.currentStock -= req.body.quantity;
     await spare.save();
+
+    await Transaction.create({
+      itemName: spare.name,
+      sku: spare.sku,
+      type: 'OUT',
+      quantity: req.body.quantity
+    });
+
     res.json(spare);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -89,8 +97,15 @@ app.patch('/api/spares/:id/consume', async (req, res) => {
 app.patch('/api/spares/:id/restock', async (req, res) => {
   try {
     const spare = await SparePart.findById(req.params.id);
-    spare.currentStock += parseInt(req.body.quantity);
+    spare.currentStock += parseInt(req.body.quantity); 
     await spare.save();
+    await Transaction.create({
+      itemName: spare.name,
+      sku: spare.sku,
+      type: 'IN',
+      quantity: req.body.quantity
+    });
+
     res.json(spare);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -101,6 +116,14 @@ app.delete('/api/spares/:id', async (req, res) => {
   try {
     await SparePart.findByIdAndDelete(req.params.id);
     res.json({ message: 'Deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+app.get('/api/transactions', async (req, res) => {
+  try {
+    const logs = await Transaction.find().sort({ date: -1 });
+    res.json(logs);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

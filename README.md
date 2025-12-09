@@ -1,4 +1,4 @@
-# 📦 Optimum Inventory Control System by Vaibhav Pratap Deo
+# 📦 Optimum Inventory Control System
 
 **A full-stack inventory management system designed for industrial machine spares.**
 
@@ -54,9 +54,9 @@ This application uses the **MERN Stack** (MongoDB, Express, React, Node.js) to a
 |:---:|:---:|
 | ![Incoming Stock](./screenshots/stock.png) | ![Settings](./screenshots/settings.png) |
 
-| **Secure Login / Registration** |
-|:---:|
-| ![Login Page](./screenshots/login.png) |
+| **Secure Login / Registration** | **Reports & Transaction Logs** |
+|:---:|:---:|
+| ![Login Page](./screenshots/login.png) | ![Reports](./screenshots/reports.png) |
 
 ---
 
@@ -66,24 +66,24 @@ Follow these steps to run the project locally.
 
 ### 1. Clone the Repository
 ```bash```
-git clone [https://github.com/vaibhavdeo21/Optimum-Inventory-Control-MERN.git](https://github.com/vaibhavdeo21/Optimum-Inventory-Control-MERN.git)
-cd Optimum-Inventory-Control-MERN
+• git clone [https://github.com/vaibhavdeo21/Optimum-Inventory-Control-MERN.git](https://github.com/vaibhavdeo21/Optimum-Inventory-Control-MERN.git)
+• cd Optimum-Inventory-Control-MERN
 
 ### 2. Backend Setup
 Navigate to the backend folder, install dependencies, and start the server.
 
 ```bash```
-cd backend
-npm install
-node server.js
+• cd backend
+• npm install
+• node server.js
 Output: Server running on port 5000 & MongoDB Connected
 
 ### 3. Frontend Setup
 Open a new terminal, navigate to the project root, and start the React app.
 ```Bash```
-# (Make sure you are in the root folder, not inside backend)
-npm install
-npm run dev
+**(Make sure you are in the root folder, not inside backend)
+• npm install
+• npm run dev
 Open your browser at http://localhost:5173
 
 

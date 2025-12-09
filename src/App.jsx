@@ -1,9 +1,8 @@
 import React, { useContext } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-
 import { AuthProvider, AuthContext } from './context/AuthContext';
 import Login from './components/Login';
-
+import Reports from './components/Reports';
 import Sidebar from './components/Sidebar';
 import Dashboard from './components/Dashboard';
 import Analytics from './components/Analytics';
@@ -53,7 +52,7 @@ function App() {
               </ProtectedRoute>
             } 
           />
-          
+          <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
           <Route 
             path="/add-stock" 
             element={
