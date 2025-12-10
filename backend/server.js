@@ -66,6 +66,14 @@ app.post('/api/spares', async (req, res) => {
   try {
     const spare = new SparePart(req.body);
     const newSpare = await spare.save();
+
+    await Transaction.create({
+      itemName: newSpare.name,
+      sku: newSpare.sku,
+      type: 'CREATED',
+      quantity: newSpare.currentStock 
+    });
+
     res.status(201).json(newSpare);
   } catch (err) {
     res.status(400).json({ message: err.message });
@@ -114,7 +122,21 @@ app.patch('/api/spares/:id/restock', async (req, res) => {
 
 app.delete('/api/spares/:id', async (req, res) => {
   try {
+    const itemToDelete = await SparePart.findById(req.params.id);
+    
+    if (!itemToDelete) {
+      return res.status(404).json({ message: 'Item not found' });
+    }
+
+    await Transaction.create({
+      itemName: itemToDelete.name,
+      sku: itemToDelete.sku,
+      type: 'DELETED',
+      quantity: itemToDelete.currentStock 
+    });
+
     await SparePart.findByIdAndDelete(req.params.id);
+    
     res.json({ message: 'Deleted successfully' });
   } catch (err) {
     res.status(500).json({ message: err.message });

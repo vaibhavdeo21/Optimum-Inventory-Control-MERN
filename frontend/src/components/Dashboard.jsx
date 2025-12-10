@@ -77,10 +77,9 @@ const Dashboard = () => {
     ],
   };
 
-  // FIX 1: Strict Chart Options
   const chartOptions = {
     responsive: true,
-    maintainAspectRatio: false, // Allows chart to fill the container height
+    maintainAspectRatio: false, 
     plugins: { legend: { position: 'top' } },
     scales: {
       y: { grid: { color: '#f3f4f6' } },
@@ -105,7 +104,6 @@ const Dashboard = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
-        {/* Left Column: Charts & Table */}
         <div className="lg:col-span-2 space-y-8">
           
           <div className="bg-white p-6 rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100">
@@ -116,7 +114,6 @@ const Dashboard = () => {
               </h2>
             </div>
             
-            {/* FIX 2: Added 'relative' and 'w-full' to ensure container constrains the chart */}
             <div className="relative h-72 w-full">
               <Bar data={chartData} options={chartOptions} />
             </div>
@@ -178,7 +175,6 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Right Column: Add Form */}
         <div className="bg-white p-6 rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100 h-fit sticky top-8">
           <div className="mb-6 pb-4 border-b border-slate-100">
             <h2 className="text-xl font-bold text-slate-800">Add New Spare</h2>

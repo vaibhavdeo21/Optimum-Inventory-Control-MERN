@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { PackagePlus, Search, Truck, History } from 'lucide-react';
+import { PackagePlus, Search, Truck, History, Trash2 } from 'lucide-react'; // Added Trash2 icon
 
 const AddStock = () => {
   const navigate = useNavigate();
@@ -10,9 +10,8 @@ const AddStock = () => {
   const [quantity, setQuantity] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   
-  // Load logs from Session Storage
   const [recentLogs, setRecentLogs] = useState(() => {
-    const savedLogs = sessionStorage.getItem('sessionLogs');
+    const savedLogs = localStorage.getItem('localStockLogs');
     return savedLogs ? JSON.parse(savedLogs) : [];
   });
 
@@ -20,10 +19,16 @@ const AddStock = () => {
     fetchSpares();
   }, []);
 
-  // Save logs to Session Storage whenever they change
   useEffect(() => {
-    sessionStorage.setItem('sessionLogs', JSON.stringify(recentLogs));
+    localStorage.setItem('localStockLogs', JSON.stringify(recentLogs));
   }, [recentLogs]);
+
+  const clearLogs = () => {
+    if (window.confirm("Are you sure you want to clear the activity history?")) {
+      setRecentLogs([]);
+      localStorage.removeItem('localStockLogs');
+    }
+  };
 
   const fetchSpares = async () => {
     try {
@@ -46,13 +51,13 @@ const AddStock = () => {
         id: Date.now(),
         name: item.name,
         qty: quantity,
-        time: new Date().toLocaleTimeString(),
+        time: new Date().toLocaleString(), 
         sku: item.sku
       };
       
       setRecentLogs([newLog, ...recentLogs]); 
       setQuantity('');
-      setSelectedSpare(''); // Reset selection
+      setSelectedSpare('');
       fetchSpares();
       alert(`Successfully added ${quantity} units to inventory.`);
     } catch (err) {
@@ -75,7 +80,6 @@ const AddStock = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         
-        {/* LEFT: Entry Form */}
         <div className="bg-white p-8 rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100 h-fit">
           <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-50">
             <div className="p-3 bg-indigo-100 rounded-xl text-indigo-600">
@@ -107,9 +111,7 @@ const AddStock = () => {
                 size={5} 
                 required
               >
-                {/* FIX: Placeholder Option added here */}
                 <option value="" disabled className="p-2 text-gray-400 italic">-- Select an Item to Restock --</option>
-                
                 {filteredSpares.map(spare => (
                   <option key={spare._id} value={spare._id} className="p-2 hover:bg-indigo-50 cursor-pointer border-b border-slate-50">
                     {spare.name} (Current: {spare.currentStock}) - SKU: {spare.sku}
@@ -137,16 +139,26 @@ const AddStock = () => {
           </form>
         </div>
 
-        {/* RIGHT: Recent Activity Log */}
         <div className="bg-slate-900 p-8 rounded-2xl shadow-xl text-white h-fit">
-          <div className="flex items-center gap-3 mb-6">
-             <History className="text-emerald-400" />
-             <h2 className="text-lg font-bold">Session Activity Log</h2>
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+               <History className="text-emerald-400" />
+               <h2 className="text-lg font-bold">Activity History</h2>
+            </div>
+            {recentLogs.length > 0 && (
+              <button 
+                onClick={clearLogs} 
+                className="text-xs text-red-400 hover:text-red-300 flex items-center gap-1 bg-white/5 px-2 py-1 rounded-lg border border-white/10"
+                title="Clear all history"
+              >
+                <Trash2 size={12} /> Clear
+              </button>
+            )}
           </div>
 
           <div className="space-y-4 max-h-[400px] overflow-y-auto">
             {recentLogs.length === 0 ? (
-              <p className="text-slate-500 text-sm italic">No stock received in this session yet.</p>
+              <p className="text-slate-500 text-sm italic">No history available.</p>
             ) : (
               recentLogs.map(log => (
                 <div key={log.id} className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/10">
@@ -156,7 +168,7 @@ const AddStock = () => {
                   </div>
                   <div className="text-right">
                     <p className="text-emerald-400 font-bold text-lg">+{log.qty}</p>
-                    <p className="text-xs text-slate-500">{log.time}</p>
+                    <p className="text-[10px] text-slate-500">{log.time}</p>
                   </div>
                 </div>
               ))
