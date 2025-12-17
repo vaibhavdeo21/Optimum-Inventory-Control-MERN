@@ -82,6 +82,7 @@ Output: Server running on port 5000 & MongoDB Connected
 Open a new terminal, navigate to the project root, and start the React app.
 ```Bash```
 **(Make sure you are in the root folder, not inside backend)
+• cd frontend
 • npm install
 • npm run dev
 Open your browser at http://localhost:5173
